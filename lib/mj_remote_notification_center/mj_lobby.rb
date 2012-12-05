@@ -38,10 +38,11 @@ class MJLobby
     peer      = notification.peer
     oldPeer   = @peers.values.detect { |peer| peer.uuid == uuid }
 
-    NSLog("Got UUID = #{ uuid }, new peer = #{ peer.peerID }peer = #{ oldPeer && oldPeer.peerID }")
+    NSLog("Got UUID = #{ uuid }, new peer = #{ peer.peerID }, peer = #{ oldPeer && oldPeer.peerID }")
 
     if oldPeer
-      updatePeer peer, oldPeer
+      @peers[ peer.peerID ] = oldPeer
+      oldPeer.updateWithPeer peer
     else
       peer.uuid = notification.userInfo
 
@@ -72,17 +73,8 @@ class MJLobby
   end
 
   def connectedPeers
-    @peers.values.select { |peer| peer.connected? }
-  end
-
-  def updatePeer(oldPeer, newPeer)
-    oldPeer.connected!
-
-    @peers.delete oldPeer.peerID
-    oldPeer.peerID           = newPeer.peerID
-    @peers[ newPeer.peerID ] = oldPeer
-
-    MJRemoteNotificationCenter.defaultCenter.notifyLocally "MJPeerUpdated", peer: oldPeer, userInfo: nil
+    puts "connectedPeers, know #{ @peers.values.length } peers #{ @peers.values.map { |p| p.__quick.to_s }.join ' ' }"
+    @peers.values.select { |peer| peer.connected? }.uniq
   end
 
 end

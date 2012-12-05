@@ -4,6 +4,7 @@ class MJPeer
   attr_reader   :uuid
 
   def init(peerName, peerID)
+    puts "MJPeer#init #{ peerName } / #{ peerID }"
     @peerName = peerName
     @peerID   = peerID
 
@@ -13,8 +14,8 @@ class MJPeer
   end
 
   def connected!
-    return if @status == :connected
     @status = @uuid ? :connected : :waiting_for_uuid
+    return if @status == :connected
 
     NSLog("Connected with #{ peerID }, waiting for uuid")
     MJLobby.defaultLobby.peerJoined(self)
@@ -46,10 +47,22 @@ class MJPeer
   def postNotification(notificationName, userInfo: userInfo)
     MJRemoteNotificationCenter.defaultCenter.postNotificationToPeer peerID, name: notificationName, userInfo: userInfo
   end
+  
+  def updateWithPeer(newPeer)
+    connected!
+
+    @peerID = newPeer.peerID
+
+    MJRemoteNotificationCenter.defaultCenter.notifyLocally "MJPeerUpdated", peer: self, userInfo: nil
+  end
 
   def uuid=(uuid)
     @uuid   = uuid
     @status = :connected unless isSelf?
   end
 
+  def __quick
+    "#{ isSelf? }:#{ @peerID }:#{ @status }"
+  end
+  
 end
