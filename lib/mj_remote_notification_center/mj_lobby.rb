@@ -11,6 +11,10 @@ class MJLobby
   def init(session)
     MJLobby.defaultLobby = self
 
+    puts ">" * 100
+    puts "CREATING A LOBBY!  OBJECT ID = #{ object_id }"
+    puts ">" * 100
+
     @session = session
     @peers   = Hash.new
 
@@ -40,9 +44,15 @@ class MJLobby
 
     NSLog("Got UUID = #{ uuid }, new peer = #{ peer.peerID }, peer = #{ oldPeer && oldPeer.peerID }")
 
+    peer.flag = rand(1000).to_s
+    
     if oldPeer
+      puts "Found oldPeer, looks like #{ oldPeer.__quick }"
       @peers[ peer.peerID ] = oldPeer
+      oldPeer.uuid = uuid
+      puts "BEFORE know #{ @peers.values.length } peers #{ @peers.values.map { |p| p.__quick }.join ' ' } // #{ self.object_id }"
       oldPeer.updateWithPeer peer
+      puts "AFTER  know #{ @peers.values.length } peers #{ @peers.values.map { |p| p.__quick }.join ' ' } // #{ self.object_id }"
     else
       peer.uuid = notification.userInfo
 
@@ -73,7 +83,7 @@ class MJLobby
   end
 
   def connectedPeers
-    puts "connectedPeers, know #{ @peers.values.length } peers #{ @peers.values.map { |p| p.__quick.to_s }.join ' ' }"
+    puts "connectedPeers, know #{ @peers.values.length } peers #{ @peers.values.map { |p| p.__quick }.join ' ' } // #{ self.object_id }"
     @peers.values.select { |peer| peer.connected? }.uniq
   end
 

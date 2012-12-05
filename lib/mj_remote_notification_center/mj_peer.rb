@@ -2,7 +2,8 @@ class MJPeer
 
   attr_accessor :peerID
   attr_reader   :uuid
-
+  attr_accessor :flag
+  
   def init(peerName, peerID)
     puts "MJPeer#init #{ peerName } / #{ peerID }"
     @peerName = peerName
@@ -49,6 +50,8 @@ class MJPeer
   end
   
   def updateWithPeer(newPeer)
+    @flag ||= rand(1000).to_s
+    puts "in updateWithPeer, look like #{ __quick }"
     connected!
 
     @peerID = newPeer.peerID
@@ -62,7 +65,7 @@ class MJPeer
   end
 
   def __quick
-    "#{ isSelf? }:#{ @peerID }:#{ @status }"
+    "#{ isSelf? }:#{ @peerID }:#{ @status }:#{ @flag }"
   end
   
 end

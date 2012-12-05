@@ -71,7 +71,7 @@ class MJRemoteNotificationCenter
     @session.disconnectTimeout = 5.0
     @session.available         = true
 
-    @peerList = MJLobby.alloc.init(@session)
+    @peerList ||= MJLobby.alloc.init(@session)
   end
 
   def generateUUID
@@ -101,6 +101,7 @@ class MJRemoteNotificationCenter
 
   def becomeActive(notification)
     puts "becomeActive"
+    establishSession
   end
 
   def enterForeground(notification)
